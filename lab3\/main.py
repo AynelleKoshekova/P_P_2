@@ -1,4 +1,4 @@
-from utilities import (
+from utilities import ( # type: ignore
     grams_to_ounces, fahrenheit_to_celsius, solve, is_prime, filter_prime, 
     reverse_words, has_33, spy_game, sphere_volume, unique_list, is_palindrome, 
     print_permutations
