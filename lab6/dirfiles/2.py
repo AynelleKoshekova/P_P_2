@@ -18,6 +18,6 @@ def access(path):
         print(path, "is not executability")
 
 pp=os.path.join(os.getcwd(), "")
-pp1=os.path.join(os.getcwd(), r"/Users/aizere/Desktop/lab6/dir_files")
+pp1=os.path.join(os.getcwd(), r"lab6/dirfiles")
 access(pp)
 access(pp1)
