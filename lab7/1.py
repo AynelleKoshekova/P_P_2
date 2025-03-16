@@ -1,50 +1,50 @@
 import pygame 
-import sys
-from datetime import datetime
-import math 
+import os
+import datetime
+
+_image_library = {}
+def get_image(path):
+    global _image_library 
+    image = _image_library.get(path)
+    if image == None:
+        canonicalized_path = path.replace("/",os.sep).replace("\\",os.sep)
+        image = pygame.image.load(canonicalized_path)
+        _image_library[canonicalized_path] = image
+    return image
+
+def blitRotate(screen , img , pos , angle):
+    rotated_img = pygame.transform.rotate(img , angle)
+    new_rect = rotated_img.get_rect(center = img.get_rect(center = pos).center)
+
+    screen.blit(rotated_img , new_rect.topleft)
 
 pygame.init()
-width, height = 800, 600
-center = (400, 300)
-
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Mickey Clock")
-body = pygame.image.load('clock.png')
-min_hand = pygame.image.load('min_hand.png')
-sec_hand = pygame.image.load('sec_hand.png')
-
-def rotate_image (image, angle, pivot):
-        w, h = image.get_size()
-        offset = pygame.math.Vector2(0, -height/2)
-        rotated_image = pygame.transform.rotate(image, -angle)
-        rotated_offset = offset.rotate(-angle)
-        rect = rotated_image.get_rect(center=pivot +rotated_offset)
-        return rotated_image, rect
 done = False
 
-while not done:
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                        done = True
-        screen.fill((255, 255, 255))
-        body_rect = body.get_rect(center=center)
-        screen.blit(body, body_rect)
+screen = pygame.display.set_mode((1200,800))
+w , h = screen.get_size()
+bg = pygame.transform.scale(get_image("clock.png"), (w,h))
+pygame.display.set_caption("Mickey's Clock")
 
-        now = datetime.now()
-        minutes = now.minute
-        seconds = now.second
 
-        m_angle = (minutes/60)*360
-        s_angle = (seconds/60)*360
+angle_min = 0
+angle_sec = 0
+global topleft
+topleft = (w//2 , h//2 )
 
-        right_hand_image, right_hand_rect = rotate_image(min_hand, m_angle, center)
-        left_hand_image, left_hand_rect = rotate_image(sec_hand, s_angle, center)
+while not done :
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT :
+            done = True
 
-        screen.blit(right_hand_image, right_hand_rect)
-        screen.blit(left_hand_image, left_hand_rect)
+    today = datetime.datetime.now()
+    minutes = int(datetime.datetime.strftime(today,'%M'))
+    seconds = int(datetime.datetime.strftime(today,'%S')) 
+    pos = (screen.get_width()/2 , screen.get_height()/2 )
+    screen.blit( bg , (0,0) )
 
-        pygame.display.flip()
-        pygame.time.Clock().tick(60)
-
-pygame.quit()
-sys.exit()
+    blitRotate(screen , get_image("sec_hand.png") , pos ,angle_sec )
+    blitRotate(screen , get_image("min_hand.png"), pos , angle_min)
+    angle_min = -6*minutes-53
+    angle_sec = -6*seconds
+    pygame.display.flip()
